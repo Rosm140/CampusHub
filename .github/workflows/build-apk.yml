@@ -1,0 +1,47 @@
+name: Build CampusHUB1 Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Generate Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare Mock google-services.json if missing
+        run: |
+          if [ ! -f "android/app/google-services.json" ]; then
+            echo '{"project_info":{"project_number":"123456789","project_id":"campushub1-app","storage_bucket":"campushub1.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:123456789:android:12345","android_client_info":{"package_name":"com.campushub1.app"}}}],"configuration_version":"1"}' > android/app/google-services.json
+          fi
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x android/gradlew || true
+
+      - name: Build Debug APK
+        working-directory: android
+        run: gradle assembleDebug --stacktrace || ./gradlew assembleDebug --stacktrace
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CampusHUB1-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14

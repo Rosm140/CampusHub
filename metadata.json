@@ -1,0 +1,6 @@
+{
+  "name": "CampusHUB1 - Native Android Campus Management & Community",
+  "description": "All-in-one digital campus platform for students, faculty, club coordinators, and administrators with Jetpack Compose & Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
